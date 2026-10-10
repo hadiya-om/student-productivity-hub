@@ -269,3 +269,64 @@ flex-direction: column;
 width: 100%;
 }
 }
+.note-form {
+display: flex;
+flex-direction: column;
+gap: 12px;
+margin: 25px 0;
+}
+
+.note-form input,
+.note-form textarea {
+width: 100%;
+padding: 12px;
+border: 1px solid #d5dfd3;
+border-radius: 8px;
+font-family: Arial, sans-serif;
+font-size: 14px;
+}
+
+.note-form textarea {
+resize: vertical;
+line-height: 1.6;
+}
+
+.note-form button {
+align-self: flex-start;
+padding: 12px 20px;
+background: #2f6447;
+color: white;
+border: none;
+border-radius: 8px;
+cursor: pointer;
+}
+
+.notes-grid {
+display: grid;
+grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+gap: 16px;
+margin-top: 25px;
+}
+
+.note-card {
+background: white;
+padding: 20px;
+border: 1px solid #e3e9e0;
+border-radius: 12px;
+overflow-wrap: anywhere;
+}
+
+.note-card h3 {
+margin-top: 0;
+color: #2f6447;
+}
+
+.note-card p {
+color: #5f7064;
+line-height: 1.7;
+white-space: pre-wrap;
+}
+
+.note-card .delete-button {
+margin-top: 10px;
+}

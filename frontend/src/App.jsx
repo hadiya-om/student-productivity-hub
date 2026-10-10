@@ -5,6 +5,9 @@ function App() {
 const [page, setPage] = useState("Dashboard");
 const [tasks, setTasks] = useState([]);
 const [taskName, setTaskName] = useState("");
+const [notes, setNotes] = useState([]);
+const [noteTitle, setNoteTitle] = useState("");
+const [noteContent, setNoteContent] = useState("");
 
 const pages = ["Dashboard", "Tasks", "Study Notes", "Progress"];
 
@@ -42,6 +45,29 @@ task.id === id ? { ...task, done: !task.done } : task
 function deleteTask(id) {
 setTasks(tasks.filter((task) => task.id !== id));
 }
+
+function addNote(event) {
+event.preventDefault();
+
+if (noteTitle.trim() === "" || noteContent.trim() === "") {
+return;
+}
+
+const newNote = {
+id: Date.now(),
+title: noteTitle.trim(),
+content: noteContent.trim(),
+};
+
+setNotes([...notes, newNote]);
+setNoteTitle("");
+setNoteContent("");
+}
+
+function deleteNote(id) {
+setNotes(notes.filter((note) => note.id !== id));
+}
+
 
 return ( <div className="app"> <aside className="sidebar"> <h2 className="logo">Dayora.</h2> <p className="subtitle">YOUR PERSONAL PRODUCTIVITY HUB</p>
 
@@ -151,12 +177,57 @@ return ( <div className="app"> <aside className="sidebar"> <h2 className="logo">
       </section>
     )}
 
-    {page === "Study Notes" && (
-      <section className="panel">
-        <h2>My Study Notes</h2>
-        <p>Keep your important learning notes organized in one place.</p>
-      </section>
-    )}
+   {page === "Study Notes" && (
+
+  <section className="panel">
+    <h2>My Study Notes</h2>
+    <p>Save the important things you learn, all in one place.</p>
+
+
+<form className="note-form" onSubmit={addNote}>
+  <input
+    type="text"
+    placeholder="Note title (e.g. Java OOP)"
+    value={noteTitle}
+    onChange={(event) => setNoteTitle(event.target.value)}
+  />
+
+  <textarea
+    placeholder="Write your study notes here..."
+    value={noteContent}
+    onChange={(event) => setNoteContent(event.target.value)}
+    rows="4"
+  />
+
+  <button type="submit">Save Note</button>
+</form>
+
+<div className="notes-grid">
+  {notes.length === 0 ? (
+    <p className="empty-message">
+      No notes yet. Save your first study note!
+    </p>
+  ) : (
+    notes.map((note) => (
+      <div className="note-card" key={note.id}>
+        <h3>{note.title}</h3>
+        <p>{note.content}</p>
+        <button
+          className="delete-button"
+          type="button"
+          onClick={() => deleteNote(note.id)}
+        >
+          Delete
+        </button>
+      </div>
+    ))
+  )}
+</div>
+
+
+  </section>
+)}
+
 
     {page === "Progress" && (
       <section className="panel">
