@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState,useEffect } from "react";
 import "./App.css";
 
 function App() {
@@ -14,58 +14,218 @@ const pages = ["Dashboard", "Tasks", "Study Notes", "Progress"];
 const completed = tasks.filter((task) => task.done).length;
 const pending = tasks.length - completed;
 
-function addTask(event) {
-event.preventDefault();
+useEffect(() => {
+  async function fetchTasks() {
+    try {
+      const response = await fetch("http://localhost:5000/api/tasks");
+
+      if (!response.ok) {
+        throw new Error("Could not load tasks");
+      }
+
+      const data = await response.json();
+
+      setTasks(
+        data.map((task) => ({
+          id: task._id,
+          title: task.name,
+          done: task.completed,
+        }))
+      );
+    } catch (error) {
+      console.error("Error loading tasks:", error);
+    }
+  }
+
+  fetchTasks();
+}, []);
 
 
-if (taskName.trim() === "") {
-  return;
+useEffect(() => {
+  async function fetchNotes() {
+    try {
+      const response = await fetch("http://localhost:5000/api/notes");
+
+      if (!response.ok) {
+        throw new Error("Could not load notes");
+      }
+
+      const data = await response.json();
+
+      setNotes(
+        data.map((note) => ({
+          id: note._id,
+          title: note.title,
+          content: note.content,
+        }))
+      );
+    } catch (error) {
+      console.error("Error loading notes:", error);
+    }
+  }
+
+  fetchNotes();
+}, []);
+
+async function addTask(event) {
+  event.preventDefault();
+
+  if (taskName.trim() === "") {
+    return;
+  }
+
+  try {
+    const response = await fetch("http://localhost:5000/api/tasks", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ name: taskName.trim() }),
+    });
+
+    if (!response.ok) {
+      throw new Error("Could not save task");
+    }
+
+    const task = await response.json();
+
+    setTasks((previousTasks) => [
+      ...previousTasks,
+      {
+        id: task._id,
+        title: task.name,
+        done: task.completed,
+      },
+    ]);
+
+    setTaskName("");
+  } catch (error) {
+    console.error("Error adding task:", error);
+    alert("Could not save task. Please check the backend.");
+  }
 }
 
-const newTask = {
-  id: Date.now(),
-  title: taskName.trim(),
-  done: false,
-};
+async function toggleTask(id) {
+  const task = tasks.find((item) => item.id === id);
 
-setTasks([...tasks, newTask]);
-setTaskName("");
+  if (!task) return;
 
+  try {
+    const response = await fetch(
+      `http://localhost:5000/api/tasks/${id}`,
+      {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ completed: !task.done }),
+      }
+    );
 
+    if (!response.ok) {
+      throw new Error("Could not update task");
+    }
+
+    const updatedTask = await response.json();
+
+    setTasks((previousTasks) =>
+      previousTasks.map((item) =>
+        item.id === id
+          ? { ...item, done: updatedTask.completed }
+          : item
+      )
+    );
+  } catch (error) {
+    console.error("Error updating task:", error);
+    alert("Could not update task.");
+  }
 }
 
-function toggleTask(id) {
-setTasks(
-tasks.map((task) =>
-task.id === id ? { ...task, done: !task.done } : task
-)
-);
+async function deleteTask(id) {
+  try {
+    const response = await fetch(
+      `http://localhost:5000/api/tasks/${id}`,
+      {
+        method: "DELETE",
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error("Could not delete task");
+    }
+
+    setTasks((previousTasks) =>
+      previousTasks.filter((task) => task.id !== id)
+    );
+  } catch (error) {
+    console.error("Error deleting task:", error);
+    alert("Could not delete task.");
+  }
 }
 
-function deleteTask(id) {
-setTasks(tasks.filter((task) => task.id !== id));
+async function addNote(event) {
+  event.preventDefault();
+
+  if (noteTitle.trim() === "" || noteContent.trim() === "") {
+    return;
+  }
+
+  try {
+    const response = await fetch("http://localhost:5000/api/notes", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        title: noteTitle.trim(),
+        content: noteContent.trim(),
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error("Could not save note");
+    }
+
+    const note = await response.json();
+
+    setNotes((previousNotes) => [
+      {
+        id: note._id,
+        title: note.title,
+        content: note.content,
+      },
+      ...previousNotes,
+    ]);
+
+    setNoteTitle("");
+    setNoteContent("");
+  } catch (error) {
+    console.error("Error saving note:", error);
+    alert("Could not save note. Please check the backend.");
+  }
 }
 
-function addNote(event) {
-event.preventDefault();
 
-if (noteTitle.trim() === "" || noteContent.trim() === "") {
-return;
-}
+async function deleteNote(id) {
+  try {
+    const response = await fetch(
+      `http://localhost:5000/api/notes/${id}`,
+      {
+        method: "DELETE",
+      }
+    );
 
-const newNote = {
-id: Date.now(),
-title: noteTitle.trim(),
-content: noteContent.trim(),
-};
+    if (!response.ok) {
+      throw new Error("Could not delete note");
+    }
 
-setNotes([...notes, newNote]);
-setNoteTitle("");
-setNoteContent("");
-}
-
-function deleteNote(id) {
-setNotes(notes.filter((note) => note.id !== id));
+    setNotes((previousNotes) =>
+      previousNotes.filter((note) => note.id !== id)
+    );
+  } catch (error) {
+    console.error("Error deleting note:", error);
+    alert("Could not delete note.");
+  }
 }
 
 
