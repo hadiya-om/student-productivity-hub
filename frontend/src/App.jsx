@@ -70,9 +70,17 @@ useEffect(() => {
 async function addTask(event) {
   event.preventDefault();
 
-  if (taskName.trim() === "") {
-    return;
-  }
+  const trimmedName = taskName.trim();
+
+if (!trimmedName) {
+  alert("Please enter a task name.");
+  return;
+}
+
+if (trimmedName.length > 100) {
+  alert("Task name must be 100 characters or less.");
+  return;
+}
 
   try {
     const response = await fetch("http://localhost:5000/api/tasks", {
@@ -80,12 +88,13 @@ async function addTask(event) {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ name: taskName.trim() }),
+     body: JSON.stringify({ name: trimmedName }),
     });
 
     if (!response.ok) {
-      throw new Error("Could not save task");
-    }
+  const errorData = await response.json();
+  throw new Error(errorData.message || "Could not save task");
+}
 
     const task = await response.json();
 
@@ -100,9 +109,9 @@ async function addTask(event) {
 
     setTaskName("");
   } catch (error) {
-    console.error("Error adding task:", error);
-    alert("Could not save task. Please check the backend.");
-  }
+  console.error("Error adding task:", error);
+  alert(error.message || "Could not save task. Please try again.");
+}
 }
 
 async function toggleTask(id) {
@@ -165,10 +174,23 @@ async function deleteTask(id) {
 
 async function addNote(event) {
   event.preventDefault();
+const trimmedTitle = noteTitle.trim();
+const trimmedContent = noteContent.trim();
 
-  if (noteTitle.trim() === "" || noteContent.trim() === "") {
-    return;
-  }
+if (!trimmedTitle || !trimmedContent) {
+  alert("Please enter both a note title and its content.");
+  return;
+}
+
+if (trimmedTitle.length > 100) {
+  alert("Note title must be 100 characters or less.");
+  return;
+}
+
+if (trimmedContent.length > 5000) {
+  alert("Note content must be 5000 characters or less.");
+  return;
+}
 
   try {
     const response = await fetch("http://localhost:5000/api/notes", {
@@ -177,14 +199,15 @@ async function addNote(event) {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        title: noteTitle.trim(),
-        content: noteContent.trim(),
-      }),
+  title: trimmedTitle,
+  content: trimmedContent,
+}),
     });
 
-    if (!response.ok) {
-      throw new Error("Could not save note");
-    }
+   if (!response.ok) {
+  const errorData = await response.json();
+  throw new Error(errorData.message || "Could not save note");
+}
 
     const note = await response.json();
 
@@ -200,9 +223,9 @@ async function addNote(event) {
     setNoteTitle("");
     setNoteContent("");
   } catch (error) {
-    console.error("Error saving note:", error);
-    alert("Could not save note. Please check the backend.");
-  }
+  console.error("Error saving note:", error);
+  alert(error.message || "Could not save note. Please try again.");
+}
 }
 
 
@@ -229,7 +252,7 @@ async function deleteNote(id) {
 }
 
 
-return ( <div className="app"> <aside className="sidebar"> <h2 className="logo">Dayora.</h2> <p className="subtitle">YOUR PERSONAL PRODUCTIVITY HUB</p>
+return ( <div className="app"> <aside className="sidebar"> <h2 className="logo">ini.</h2> <p className="subtitle">Your space. Your pace.</p>
 
 
     <nav>
@@ -245,24 +268,22 @@ return ( <div className="app"> <aside className="sidebar"> <h2 className="logo">
     </nav>
 
     <div className="sidebar-note">
-      <p>Small steps.</p>
-      <p>Steady growth. 🌱</p>
+      <p>Small steps | Steady growth </p>
+      <p></p>
     </div>
   </aside>
 
   <main className="content">
     <header className="welcome">
-      <p className="eyebrow">YOUR SPACE TO GROW</p>
-      <h1>{page === "Dashboard" ? "Welcome to Dayora!" : page}</h1>
-      <p>Make today count. One task, one note, one step at a time.</p>
+      <p className="eyebrow">A LITTLE SPACE FOR YOU</p>
+      <h1>{page === "Dashboard" ? "Welcome back." : page}</h1>
+      <p>A little space to get things done.</p>
     </header>
 
     {page === "Dashboard" && (
       <section>
-        <h2>Your study overview</h2>
-        <p className="description">
-          A little progress each day adds up to big results.
-        </p>
+        <h2>Your overview</h2>
+        
 
         <div className="cards">
           <div className="card">
@@ -274,13 +295,13 @@ return ( <div className="app"> <aside className="sidebar"> <h2 className="logo">
           <div className="card">
             <span>Completed</span>
             <h3>{completed}</h3>
-            <p>Tasks you've finished</p>
+            <p>Tasks Completed</p>
           </div>
 
           <div className="card">
             <span>Pending</span>
             <h3>{pending}</h3>
-            <p>Still to be done</p>
+            <p>Left to do</p>
           </div>
         </div>
 
