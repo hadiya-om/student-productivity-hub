@@ -373,6 +373,7 @@ nav button.active {
   }
 }
 
+
 @media (max-width: 650px) {
   .app {
     flex-direction: column;

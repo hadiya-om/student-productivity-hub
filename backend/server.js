@@ -11,7 +11,7 @@ app.use(express.json());
 
 connectDB();
 
-// Test route
+
 app.get("/", (req, res) => {
   res.send("Welcome to Dayora Backend!");
 });
@@ -20,7 +20,7 @@ app.get("/api/health", (req, res) => {
   res.json({ message: "Dayora server is running!" });
 });
 
-// Get all tasks
+
 app.get("/api/tasks", async (req, res) => {
   try {
     const tasks = await Task.find().sort({ createdAt: -1 });
@@ -30,7 +30,7 @@ app.get("/api/tasks", async (req, res) => {
   }
 });
 
-// Add a task
+
 
 app.post("/api/tasks", async (req, res) => {
   try {
@@ -63,7 +63,7 @@ app.post("/api/tasks", async (req, res) => {
   }
 });
 
-// Complete or uncomplete a task
+
 app.patch("/api/tasks/:id", async (req, res) => {
   try {
     const task = await Task.findByIdAndUpdate(
@@ -82,7 +82,7 @@ app.patch("/api/tasks/:id", async (req, res) => {
   }
 });
 
-// Delete a task
+
 app.delete("/api/tasks/:id", async (req, res) => {
   try {
     const task = await Task.findByIdAndDelete(req.params.id);
@@ -98,7 +98,7 @@ app.delete("/api/tasks/:id", async (req, res) => {
 });
 
 
- // Get all study notes
+ 
 app.get("/api/notes", async (req, res) => {
   try {
     const notes = await Note.find().sort({ createdAt: -1 });
@@ -108,7 +108,7 @@ app.get("/api/notes", async (req, res) => {
   }
 });
 
-// Add a study note
+
 
 app.post("/api/notes", async (req, res) => {
   try {
@@ -152,7 +152,7 @@ app.post("/api/notes", async (req, res) => {
   }
 });
 
-// Delete a study note
+
 app.delete("/api/notes/:id", async (req, res) => {
   try {
     const note = await Note.findByIdAndDelete(req.params.id);
@@ -168,5 +168,5 @@ app.delete("/api/notes/:id", async (req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`Dayora server running at http://localhost:${PORT}`);
+  console.log(`ini server running at http://localhost:${PORT}`);
 });

@@ -439,7 +439,9 @@ return ( <div className="app"> <aside className="sidebar"> <h2 className="logo">
       </section>
     )}
   </main>
+  
 </div>
+
 
 
 );
